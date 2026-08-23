@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:voice-scribe}",
+            "name": "Debug VoiceScribe",
+            "target": "VoiceScribe",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug VoiceScribe"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:voice-scribe}",
+            "name": "Release VoiceScribe",
+            "target": "VoiceScribe",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release VoiceScribe"
+        }
+    ]
+}
