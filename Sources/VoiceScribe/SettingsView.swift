@@ -19,7 +19,7 @@ struct SettingsView: View {
         }
       }
 
-      Toggle("Copy transcript to clipboard", isOn: $settings.copyToClipboard)
+      Toggle("Paste into active app when done", isOn: $settings.pasteOnFinish)
 
       HStack {
         Spacer()

@@ -1,20 +1,22 @@
 import AVFoundation
 import Foundation
 
-final class AudioRecorder {
+public final class AudioRecorder {
   private let engine = AVAudioEngine()
   private var converter: AVAudioConverter?
   private let targetFormat = AVAudioFormat(
     commonFormat: .pcmFormatInt16, sampleRate: 16000, channels: 1, interleaved: true)!
 
-  private(set) var pcmData = Data()
-  var onLevel: ((Float) -> Void)?
+  public private(set) var pcmData = Data()
+  public var onLevel: ((Float) -> Void)?
 
   /// Maps a peak Int16 sample to 0...1 on a dB scale so normal speech fills
   /// the meter instead of only ever reaching a small fraction of it.
   private static let noiseFloorDb: Float = -50
 
-  static func normalizedLevel(forPeak peak: Int16) -> Float {
+  public init() {}
+
+  public static func normalizedLevel(forPeak peak: Int16) -> Float {
     guard peak > 0 else { return 0 }
     let amplitude = Float(peak) / Float(Int16.max)
     let db = 20 * log10(amplitude)
@@ -22,7 +24,7 @@ final class AudioRecorder {
     return min(1, max(0, normalized))
   }
 
-  func start() throws {
+  public func start() throws {
     pcmData.removeAll()
 
     let input = engine.inputNode
@@ -37,7 +39,7 @@ final class AudioRecorder {
     try engine.start()
   }
 
-  func stop() -> Data {
+  public func stop() -> Data {
     engine.inputNode.removeTap(onBus: 0)
     engine.stop()
     return pcmData
@@ -75,7 +77,7 @@ final class AudioRecorder {
     }
   }
 
-  func encodeWav(pcm: Data) -> Data {
+  public func encodeWav(pcm: Data) -> Data {
     let sampleRate: UInt32 = 16000
     let bitsPerSample: UInt16 = 16
     let channels: UInt16 = 1

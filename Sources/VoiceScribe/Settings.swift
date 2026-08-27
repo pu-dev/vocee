@@ -6,7 +6,7 @@ final class Settings: ObservableObject {
 
   private enum Keys {
     static let barScale = "waveformBarScale"
-    static let copyToClipboard = "copyToClipboard"
+    static let pasteOnFinish = "pasteOnFinish"
   }
 
   /// Multiplier applied to each waveform bar's height. 1.0 is the default look.
@@ -14,15 +14,16 @@ final class Settings: ObservableObject {
     didSet { UserDefaults.standard.set(barScale, forKey: Keys.barScale) }
   }
 
-  @Published var copyToClipboard: Bool {
-    didSet { UserDefaults.standard.set(copyToClipboard, forKey: Keys.copyToClipboard) }
+  /// After transcribing, simulate Cmd+V to paste into the frontmost app.
+  @Published var pasteOnFinish: Bool {
+    didSet { UserDefaults.standard.set(pasteOnFinish, forKey: Keys.pasteOnFinish) }
   }
 
   private init() {
     let defaults = UserDefaults.standard
     let storedScale = defaults.object(forKey: Keys.barScale) as? Double
     self.barScale = storedScale ?? 1.0
-    self.copyToClipboard =
-      (defaults.object(forKey: Keys.copyToClipboard) as? Bool) ?? true
+    self.pasteOnFinish =
+      (defaults.object(forKey: Keys.pasteOnFinish) as? Bool) ?? false
   }
 }

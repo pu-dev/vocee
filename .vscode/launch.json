@@ -19,6 +19,26 @@
             "target": "VoiceScribe",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release VoiceScribe"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:voice-scribe}",
+            "name": "Debug voicescribe-cli",
+            "target": "voicescribe-cli",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug voicescribe-cli"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:voice-scribe}",
+            "name": "Release voicescribe-cli",
+            "target": "voicescribe-cli",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release voicescribe-cli"
         }
     ]
 }

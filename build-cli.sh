@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+CONFIG="${1:-debug}"
+BIN_NAME="voicescribe-cli"
+
+swift build -c "$CONFIG" --product "$BIN_NAME"
+
+BIN_PATH=".build/$CONFIG/$BIN_NAME"
+
+# Ad-hoc sign so the mic-permission (TCC) prompt has a stable identity to attach to.
+codesign --force --sign - "$BIN_PATH"
+
+echo "Built $BIN_PATH"
+echo "Run with: $BIN_PATH"
+echo "Or install to PATH with: cp $BIN_PATH /usr/local/bin/voicescribe"

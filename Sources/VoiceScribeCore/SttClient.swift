@@ -1,10 +1,10 @@
 import Foundation
 
-enum SttError: Error, LocalizedError {
+public enum SttError: Error, LocalizedError {
   case badResponse(Int, String)
   case missingText
 
-  var errorDescription: String? {
+  public var errorDescription: String? {
     switch self {
     case .badResponse(let status, let body):
       return "Speech-to-text request failed (\(status)): \(body)"
@@ -14,12 +14,18 @@ enum SttError: Error, LocalizedError {
   }
 }
 
-struct SttClient {
-  var baseUrl: String
-  var model: String
-  var apiKey: String?
+public struct SttClient {
+  public var baseUrl: String
+  public var model: String
+  public var apiKey: String?
 
-  func transcribe(wav: Data, filename: String = "recording.wav") async throws -> String {
+  public init(baseUrl: String, model: String, apiKey: String?) {
+    self.baseUrl = baseUrl
+    self.model = model
+    self.apiKey = apiKey
+  }
+
+  public func transcribe(wav: Data, filename: String = "recording.wav") async throws -> String {
     let boundary = "Boundary-\(UUID().uuidString)"
     var body = Data()
 
