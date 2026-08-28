@@ -1,8 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-cd $WHISPER_DIR
-
-./dev/server-stop || :
-./dev/server-start

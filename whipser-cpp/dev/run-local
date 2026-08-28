@@ -1,6 +1,0 @@
-#!/bin/bash
-
-WHISPER_DIR="$(dirname "$0")/.."
-cd $WHISPER_DIR
-
-uvicorn src.server:app --reload --port 9991
