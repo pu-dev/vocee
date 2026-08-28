@@ -1,7 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$(dirname "$0")/.."
+
+WHISPER_DIR="$(pwd)"
 PID_FILE="$WHISPER_DIR/__running/server.pid"
 
 FORCE=0

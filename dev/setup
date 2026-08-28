@@ -16,8 +16,5 @@ step "Build"
 step "Install"
 ./dev/_install
 
-step "Download model"
-./dev/_download-model
-
 step "Start"
 ./dev/_start

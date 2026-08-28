@@ -7,4 +7,11 @@ cd "$(dirname "$0")/.."
 sleep 1
 ./app/dev/open-vocee
 
+echo
+echo "************************"
+echo "README: Vocee needs Accessibility permission to paste text into the focused window."
+echo "macOS will show a permission dialog now - you must approve it in System Settings."
+echo "************************"
+read -rp "Press Enter once Accessibility is enabled... "
+
 ./mlx-whisper/dev/install

@@ -42,15 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     SttClient.fromEnvironment(baseUrl: settings.sttBaseUrl, whisperModel: settings.whisperModel)
   }
 
-  // Global hotkeys: F7, F8, F9, F10, and Option+Space as a backup since some
-  // keyboards bind the F-keys to system media/brightness functions. Any of
-  // these toggles start/stop recording. Registered via the Carbon Event
-  // Manager (RegisterEventHotKey) rather than NSEvent global monitors,
-  // because NSEvent global key monitors require Input Monitoring permission,
-  // and macOS reliably refuses to grant that to ad-hoc-signed dev builds (no
-  // stable Team ID for TCC to key the grant to — confirmed via TCC's own
-  // access logs during development). Carbon hotkeys need no permission at
-  // all and work the moment the process registers them.
+  // Global hotkey: Option+Space toggles start/stop recording. Registered via
+  // the Carbon Event Manager (RegisterEventHotKey) rather than NSEvent global
+  // monitors, because NSEvent global key monitors require Input Monitoring
+  // permission, and macOS reliably refuses to grant that to ad-hoc-signed dev
+  // builds (no stable Team ID for TCC to key the grant to — confirmed via
+  // TCC's own access logs during development). Carbon hotkeys need no
+  // permission at all and work the moment the process registers them.
   //
   // Escape is registered only while recording is in progress (and
   // unregistered as soon as it stops) so it can cancel/stop the recording
@@ -104,11 +102,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       GetApplicationEventTarget(), hotKeyEventHandler, 1, &eventType,
       Unmanaged.passUnretained(self).toOpaque(), nil)
 
-    registerHotkey(id: 1, keyCode: UInt32(kVK_F7), modifiers: 0)
-    registerHotkey(id: 2, keyCode: UInt32(kVK_F8), modifiers: 0)
-    registerHotkey(id: 3, keyCode: UInt32(kVK_F9), modifiers: 0)
-    registerHotkey(id: 4, keyCode: UInt32(kVK_F10), modifiers: 0)
-    registerHotkey(id: 5, keyCode: UInt32(kVK_Space), modifiers: UInt32(optionKey))
+    registerHotkey(id: 1, keyCode: UInt32(kVK_Space), modifiers: UInt32(optionKey))
   }
 
   private func registerHotkey(id: UInt32, keyCode: UInt32, modifiers: UInt32) {
