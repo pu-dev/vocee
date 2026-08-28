@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euo pipefail
+
+WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$WHISPER_DIR"
+
+MODEL="${1:-large-v3}"
+
+source p3/bin/activate
+
+CACHE_DIR="${HOME}/.cache/huggingface/hub/models--Systran--faster-whisper-${MODEL}"
+
+python3 -c "
+from faster_whisper import WhisperModel
+
+WhisperModel('${MODEL}', device='cpu', compute_type='int8')
+print('Downloaded ${MODEL}')
+" &
+PY_PID=$!
+
+while kill -0 "$PY_PID" 2>/dev/null; do
+  if [ -d "$CACHE_DIR" ]; then
+    echo "$(du -sh "$CACHE_DIR" 2>/dev/null | cut -f1)"
+  fi
+  sleep 5
+done
+
+wait "$PY_PID"
