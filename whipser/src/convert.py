@@ -1,5 +1,4 @@
 import argparse
-
 import mlx_whisper
 
 

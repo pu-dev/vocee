@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# ssh -R 8990:localhost:8990 emil@flexedit.app
-
-autossh -M 0 \
-  -o ServerAliveInterval=60 \
-  -o ServerAliveCountMax=3 \
-  -R 8990:localhost:8990 \
-  emil@flexedit.app
