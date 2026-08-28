@@ -11,7 +11,7 @@ let package = Package(
     ),
     .executableTarget(
       name: "Vocee",
-      dependencies: ["VoiceScribeCore"],
+      dependencies: ["VoceeCore"],
       path: "Sources/Vocee"
     ),
     .executableTarget(

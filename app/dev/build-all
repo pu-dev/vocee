@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#!/bin/bash
-
 APP_DIR="$(dirname "$0")/.."
 cd $APP_DIR
 
-# ./dev/kill-voicescribe
-# ./dev/reset-accessibility
-# ./dev/build-app
-# ./dev/open-voicescribe
+./dev/kill-vocee
+./dev/reset-accessibility
+./dev/build-app
+./dev/open-vocee

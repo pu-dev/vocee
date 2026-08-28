@@ -2,16 +2,16 @@ import AppKit
 import ApplicationServices
 import Carbon.HIToolbox
 import SwiftUI
-import VoiceScribeCore
+import VoceeCore
 
 /// Plain-file trace logging. Unified logging (NSLog/os_log) redacts dynamic
 /// string content as <private> for processes not launched under Xcode, so it
 /// is useless for debugging an ad-hoc-signed app launched via `open`.
 private let debugLogPath: String = {
   let dir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
-    .appendingPathComponent("Logs/VoiceScribe", isDirectory: true)
+    .appendingPathComponent("Logs/Vocee", isDirectory: true)
   try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-  return dir.appendingPathComponent("voicescribe-debug.log").path
+  return dir.appendingPathComponent("vocee-debug.log").path
 }()
 
 func debugLog(_ message: String) {
@@ -54,7 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   // unregistered as soon as it stops) so it can cancel/stop the recording
   // without swallowing every app's normal Escape behavior the rest of the
   // time.
-  private static let hotkeySignature: OSType = 0x7673_6372  // 'vscr'
+  private static let hotkeySignature: OSType = 0x766f_6365  // 'voce'
   private static let hotkeyIdEscape: UInt32 = 100
   private var hotKeyRefs: [EventHotKeyRef?] = []
   private var escapeHotKeyRef: EventHotKeyRef?
@@ -64,7 +64,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     if let button = statusItem.button {
       button.image = NSImage(
-        systemSymbolName: "mic.fill", accessibilityDescription: "VoiceScribe")
+        systemSymbolName: "mic.fill", accessibilityDescription: "Vocee")
       button.action = #selector(statusItemClicked)
       button.target = self
       button.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -224,7 +224,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       backing: .buffered,
       defer: false
     )
-    window.title = "VoiceScribe Settings"
+    window.title = "Vocee Settings"
     window.contentView = NSHostingView(rootView: view)
     window.center()
     window.isReleasedWhenClosed = false
@@ -255,7 +255,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let pcm = recorder.stop()
     isRecording = false
     statusItem.button?.image = NSImage(
-      systemSymbolName: "mic.fill", accessibilityDescription: "VoiceScribe")
+      systemSymbolName: "mic.fill", accessibilityDescription: "Vocee")
     unregisterEscapeHotkey()
     popover.performClose(nil)
     hotkeyWindow?.close()
@@ -320,7 +320,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       backing: .buffered,
       defer: false
     )
-    window.title = "VoiceScribe"
+    window.title = "Vocee"
     window.contentView = NSHostingView(rootView: view)
     window.center()
     window.isReleasedWhenClosed = false
@@ -331,7 +331,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
   private func showError(_ message: String) {
     let alert = NSAlert()
-    alert.messageText = "VoiceScribe"
+    alert.messageText = "Vocee"
     alert.informativeText = message
     alert.alertStyle = .warning
     alert.runModal()

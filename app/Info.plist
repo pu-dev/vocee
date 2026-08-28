@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleName</key>
-  <string>VoiceScribe</string>
+  <string>Vocee</string>
   <key>CFBundleDisplayName</key>
-  <string>VoiceScribe</string>
+  <string>Vocee</string>
   <key>CFBundleIdentifier</key>
   <string>com.vocee</string>
   <key>CFBundleVersion</key>
@@ -15,13 +15,13 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleExecutable</key>
-  <string>VoiceScribe</string>
+  <string>Vocee</string>
   <key>LSMinimumSystemVersion</key>
   <string>13.0</string>
   <key>LSUIElement</key>
   <true/>
   <key>NSMicrophoneUsageDescription</key>
-  <string>VoiceScribe needs microphone access to record audio for transcription.</string>
+  <string>Vocee needs microphone access to record audio for transcription.</string>
   <key>NSHighResolutionCapable</key>
   <true/>
 </dict>

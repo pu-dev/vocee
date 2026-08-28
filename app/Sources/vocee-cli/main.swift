@@ -1,6 +1,6 @@
 import AppKit
 import Foundation
-import VoiceScribeCore
+import VoceeCore
 
 func eprint(_ message: String) {
   FileHandle.standardError.write((message + "\n").data(using: .utf8)!)
@@ -83,7 +83,7 @@ sigintSource.setEventHandler {
 }
 sigintSource.resume()
 
-print("VoiceScribe CLI" + (shouldPaste ? " (will paste into active window when done)" : ""))
+print("Vocee CLI" + (shouldPaste ? " (will paste into active window when done)" : ""))
 do {
   try recorder.start()
 } catch {
