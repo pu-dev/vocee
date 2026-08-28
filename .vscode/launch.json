@@ -39,6 +39,46 @@
             "target": "vocee-cli",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release vocee-cli"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/app",
+            "name": "Debug vocee-cli (app)",
+            "target": "vocee-cli",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug vocee-cli (app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/app",
+            "name": "Release vocee-cli (app)",
+            "target": "vocee-cli",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release vocee-cli (app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/app",
+            "name": "Debug Vocee (app)",
+            "target": "Vocee",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Vocee (app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/app",
+            "name": "Release Vocee (app)",
+            "target": "Vocee",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Vocee (app)"
         }
     ]
 }

@@ -24,6 +24,6 @@ final class Settings: ObservableObject {
     let storedScale = defaults.object(forKey: Keys.barScale) as? Double
     self.barScale = storedScale ?? 1.0
     self.pasteOnFinish =
-      (defaults.object(forKey: Keys.pasteOnFinish) as? Bool) ?? false
+      (defaults.object(forKey: Keys.pasteOnFinish) as? Bool) ?? true
   }
 }
