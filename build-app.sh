@@ -19,5 +19,16 @@ cp Info.plist "$BUNDLE/Contents/Info.plist"
 # Ad-hoc sign so the mic-permission (TCC) prompt has a stable identity to attach to.
 codesign --force --deep --sign - "$BUNDLE"
 
+# NOTE on Accessibility (pasteToActiveWindow / CGEvent.post): unlike the mic
+# grant, TCC's Accessibility record pins to this build's exact CDHash and
+# does NOT get refreshed by toggling the switch off/on or removing/re-adding
+# the row in System Settings > Privacy & Security > Accessibility - it stays
+# silently stale (AXIsProcessTrusted() false, paste no-ops) after almost
+# every rebuild, since ad-hoc signing has no stable Team ID to key the grant
+# to. The only fix that has actually worked is a full reset before
+# relaunching:
+#   tccutil reset Accessibility ai.pipeline.voicescribe
+# then relaunch and re-grant when the prompt reappears.
+
 echo "Built $BUNDLE"
 echo "Run with: open $BUNDLE"

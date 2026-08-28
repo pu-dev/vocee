@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# ROOT_DIR=$(git rev-parse --show-toplevel)
+# DEV_DIR=${ROOT_DIR}/backend/dev
+
+uvicorn src.server:app --reload --port 8990

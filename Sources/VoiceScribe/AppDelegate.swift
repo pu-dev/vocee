@@ -1,4 +1,5 @@
 import AppKit
+import ApplicationServices
 import Carbon.HIToolbox
 import SwiftUI
 import VoiceScribeCore
@@ -6,7 +7,12 @@ import VoiceScribeCore
 /// Plain-file trace logging. Unified logging (NSLog/os_log) redacts dynamic
 /// string content as <private> for processes not launched under Xcode, so it
 /// is useless for debugging an ad-hoc-signed app launched via `open`.
-private let debugLogPath = "/tmp/voicescribe-debug.log"
+private let debugLogPath: String = {
+  let dir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+    .appendingPathComponent("Logs/VoiceScribe", isDirectory: true)
+  try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+  return dir.appendingPathComponent("voicescribe-debug.log").path
+}()
 
 func debugLog(_ message: String) {
   let line = "\(Date()) \(message)\n"
@@ -40,16 +46,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     apiKey: ProcessInfo.processInfo.environment["STT_API_KEY"]
   )
 
-  // Global hotkeys: F10, and Option+Space as a backup since some keyboards
-  // bind F10 to system Mute. Registered via the Carbon Event Manager
-  // (RegisterEventHotKey) rather than NSEvent global monitors, because
-  // NSEvent global key monitors require Input Monitoring permission, and
-  // macOS reliably refuses to grant that to ad-hoc-signed dev builds (no
+  // Global hotkeys: F7, F8, F9, F10, and Option+Space as a backup since some
+  // keyboards bind the F-keys to system media/brightness functions. Any of
+  // these toggles start/stop recording. Registered via the Carbon Event
+  // Manager (RegisterEventHotKey) rather than NSEvent global monitors,
+  // because NSEvent global key monitors require Input Monitoring permission,
+  // and macOS reliably refuses to grant that to ad-hoc-signed dev builds (no
   // stable Team ID for TCC to key the grant to — confirmed via TCC's own
   // access logs during development). Carbon hotkeys need no permission at
   // all and work the moment the process registers them.
+  //
+  // Escape is registered only while recording is in progress (and
+  // unregistered as soon as it stops) so it can cancel/stop the recording
+  // without swallowing every app's normal Escape behavior the rest of the
+  // time.
   private static let hotkeySignature: OSType = 0x7673_6372  // 'vscr'
+  private static let hotkeyIdEscape: UInt32 = 100
   private var hotKeyRefs: [EventHotKeyRef?] = []
+  private var escapeHotKeyRef: EventHotKeyRef?
   private var hotkeyWindow: NSWindow?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
@@ -73,6 +87,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     installHotkey()
+    checkAccessibilityTrust()
+  }
+
+  /// Ad-hoc-signed builds (see build-app.sh) have no stable Team ID, so
+  /// System Settings' Accessibility grant is keyed to the exact binary hash
+  /// and commonly goes stale after a rebuild even though the checkbox still
+  /// looks enabled. Prompting here surfaces that immediately instead of
+  /// pasteToActiveWindow silently no-oping later.
+  private func checkAccessibilityTrust() {
+    let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+    let trusted = AXIsProcessTrustedWithOptions(options)
+    debugLog("accessibility trust at launch: \(trusted)")
   }
 
   private func installHotkey() {
@@ -82,8 +108,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       GetApplicationEventTarget(), hotKeyEventHandler, 1, &eventType,
       Unmanaged.passUnretained(self).toOpaque(), nil)
 
-    registerHotkey(id: 1, keyCode: UInt32(kVK_F10), modifiers: 0)
-    registerHotkey(id: 2, keyCode: UInt32(kVK_Space), modifiers: UInt32(optionKey))
+    registerHotkey(id: 1, keyCode: UInt32(kVK_F7), modifiers: 0)
+    registerHotkey(id: 2, keyCode: UInt32(kVK_F8), modifiers: 0)
+    registerHotkey(id: 3, keyCode: UInt32(kVK_F9), modifiers: 0)
+    registerHotkey(id: 4, keyCode: UInt32(kVK_F10), modifiers: 0)
+    registerHotkey(id: 5, keyCode: UInt32(kVK_Space), modifiers: UInt32(optionKey))
   }
 
   private func registerHotkey(id: UInt32, keyCode: UInt32, modifiers: UInt32) {
@@ -98,8 +127,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
   }
 
-  fileprivate func hotkeyPressed() {
-    debugLog("hotkeyPressed isRecording=\(isRecording)")
+  private func registerEscapeHotkey() {
+    guard escapeHotKeyRef == nil else { return }
+    let hotkeyID = EventHotKeyID(signature: Self.hotkeySignature, id: Self.hotkeyIdEscape)
+    var ref: EventHotKeyRef?
+    let status = RegisterEventHotKey(
+      UInt32(kVK_Escape), 0, hotkeyID, GetApplicationEventTarget(), 0, &ref)
+    if status != noErr {
+      debugLog("failed to register escape hotkey (status \(status))")
+    } else {
+      escapeHotKeyRef = ref
+    }
+  }
+
+  private func unregisterEscapeHotkey() {
+    guard let ref = escapeHotKeyRef else { return }
+    UnregisterEventHotKey(ref)
+    escapeHotKeyRef = nil
+  }
+
+  fileprivate func hotkeyPressed(id: UInt32) {
+    debugLog("hotkeyPressed id=\(id) isRecording=\(isRecording)")
+    if id == Self.hotkeyIdEscape {
+      guard isRecording else { return }
+      stopAndTranscribe(silent: true)
+      return
+    }
     isRecording ? stopAndTranscribe(silent: true) : startHotkeyRecording()
   }
 
@@ -114,6 +167,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     isRecording = true
     statusItem.button?.image = NSImage(
       systemSymbolName: "waveform", accessibilityDescription: "Recording")
+    registerEscapeHotkey()
     showHotkeyWindow()
   }
 
@@ -196,6 +250,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     isRecording = true
     statusItem.button?.image = NSImage(
       systemSymbolName: "waveform", accessibilityDescription: "Recording")
+    registerEscapeHotkey()
 
     if let button = statusItem.button {
       popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
@@ -207,6 +262,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     isRecording = false
     statusItem.button?.image = NSImage(
       systemSymbolName: "mic.fill", accessibilityDescription: "VoiceScribe")
+    unregisterEscapeHotkey()
     popover.performClose(nil)
     hotkeyWindow?.close()
     hotkeyWindow = nil
@@ -244,6 +300,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   /// Simulates Cmd+V into the frontmost app. Requires Accessibility
   /// permission (System Settings → Privacy & Security → Accessibility).
   private func pasteToActiveWindow() {
+    let frontApp = NSWorkspace.shared.frontmostApplication
+    debugLog(
+      "pasteToActiveWindow: frontmost=\(frontApp?.localizedName ?? "nil") "
+        + "bundleID=\(frontApp?.bundleIdentifier ?? "nil") trusted=\(AXIsProcessTrusted())")
     guard let source = CGEventSource(stateID: .hidSystemState) else { return }
     let vKeyCode: CGKeyCode = 9  // 'v'
 
@@ -290,10 +350,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 private func hotKeyEventHandler(
   nextHandler: EventHandlerCallRef?, event: EventRef?, userData: UnsafeMutableRawPointer?
 ) -> OSStatus {
-  guard let userData else { return noErr }
+  guard let userData, let event else { return noErr }
+  var hotKeyID = EventHotKeyID()
+  let status = GetEventParameter(
+    event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil,
+    MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
+  guard status == noErr else { return noErr }
   let delegate = Unmanaged<AppDelegate>.fromOpaque(userData).takeUnretainedValue()
   Task { @MainActor in
-    delegate.hotkeyPressed()
+    delegate.hotkeyPressed(id: hotKeyID.id)
   }
   return noErr
 }
