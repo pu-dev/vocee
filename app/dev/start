@@ -5,4 +5,4 @@
 APP_DIR="$(dirname "$0")/.."
 cd $APP_DIR
 
-./dev/open-voicescribe
+./dev/open-vocee
