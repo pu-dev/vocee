@@ -23,10 +23,16 @@ struct SettingsView: View {
       Toggle("Paste into active app when done", isOn: $settings.pasteOnFinish)
 
       VStack(alignment: .leading, spacing: 4) {
-        Text("Speech-to-text server")
-        Picker("", selection: $settings.sttBackend) {
-          ForEach(SttBackend.allCases, id: \.self) { backend in
-            Text(backend.displayName).tag(backend)
+        Text("MLX whisper server")
+        TextField("http://127.0.0.1:9991", text: $settings.sttBaseUrl)
+          .textFieldStyle(.roundedBorder)
+      }
+
+      VStack(alignment: .leading, spacing: 4) {
+        Text("Whisper model")
+        Picker("", selection: $settings.whisperModel) {
+          ForEach(WhisperModel.allCases, id: \.self) { model in
+            Text(model.displayName).tag(model)
           }
         }
         .labelsHidden()

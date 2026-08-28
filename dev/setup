@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+step() {
+	echo "======================================"
+	echo "=="
+	echo "== $1"
+	echo "=="
+	echo "======================================"
+}
+
+step "Build"
+./dev/_build
+
+step "Install"
+./dev/_install
+
+step "Download model"
+./dev/_download-model
+
+step "Start"
+./dev/_start

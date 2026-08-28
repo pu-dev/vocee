@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-
-WHISPER_DIR="$(dirname "$0")/.."
-cd $WHISPER_DIR
+cd "$(dirname "$0")/.."
 
 python3 -m venv p3
 source p3/bin/activate

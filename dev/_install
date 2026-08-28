@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+./app/dev/kill-vocee || :
+./app/dev/reset-accessibility || :
+sleep 1
+./app/dev/open-vocee
+
+./mlx-whisper/dev/install

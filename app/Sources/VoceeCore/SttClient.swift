@@ -1,26 +1,28 @@
 import Foundation
 
-/// Which local whisper server to talk to. Each case carries the defaults
-/// that match that server's `dev/run-local` script and default model.
-public enum SttBackend: String, CaseIterable, Sendable {
-  case mlx
-  case fasterWhisper
+/// Default address of the local MLX whisper server (`dev/run-local`).
+public let defaultSttBaseUrl = "http://127.0.0.1:9991"
+
+/// Whisper model size to request from the MLX whisper server. Repo IDs match
+/// `mlx-whisper/dev/download-model`.
+public enum WhisperModel: String, CaseIterable, Sendable {
+  case medium
+  case turbo
+  case large
 
   public var displayName: String {
     switch self {
-    case .mlx: return "MLX Whisper"
-    case .fasterWhisper: return "Faster Whisper"
+    case .medium: return "Medium"
+    case .turbo: return "Turbo"
+    case .large: return "Large"
     }
   }
 
-  public var defaultBaseUrl: String {
-    "http://127.0.0.1:9991"
-  }
-
-  public var defaultModel: String {
+  public var repoId: String {
     switch self {
-    case .mlx: return "mlx-community/whisper-large-v3-turbo"
-    case .fasterWhisper: return "large-v3"
+    case .medium: return "mlx-community/whisper-medium"
+    case .turbo: return "mlx-community/whisper-large-v3-turbo"
+    case .large: return "mlx-community/whisper-large-v3-mlx"
     }
   }
 }
@@ -51,12 +53,15 @@ public struct SttClient {
   }
 
   /// Builds a client from the `STT_BASE_URL` / `STT_MODEL` / `STT_API_KEY`
-  /// environment variables, falling back to the given backend's defaults.
-  public static func fromEnvironment(backend: SttBackend = .fasterWhisper) -> SttClient {
+  /// environment variables, falling back to `baseUrl` / `whisperModel`.
+  public static func fromEnvironment(
+    baseUrl: String = defaultSttBaseUrl,
+    whisperModel: WhisperModel = .large
+  ) -> SttClient {
     let env = ProcessInfo.processInfo.environment
     return SttClient(
-      baseUrl: env["STT_BASE_URL"] ?? backend.defaultBaseUrl,
-      model: env["STT_MODEL"] ?? backend.defaultModel,
+      baseUrl: env["STT_BASE_URL"] ?? baseUrl,
+      model: env["STT_MODEL"] ?? whisperModel.repoId,
       apiKey: env["STT_API_KEY"]
     )
   }

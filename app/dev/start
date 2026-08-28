@@ -1,8 +1,4 @@
 #!/bin/bash
-
-#!/bin/bash
-
-APP_DIR="$(dirname "$0")/.."
-cd $APP_DIR
+cd "$(dirname "$0")/.."
 
 ./dev/open-vocee

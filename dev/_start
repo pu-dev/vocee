@@ -1,7 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-
-ROOT_DIR="$(dirname "$0")/.."
-cd $ROOT_DIR
+cd "$(dirname "$0")/.."
 
 ./whipser/dev/server-restart

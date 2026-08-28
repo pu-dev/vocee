@@ -1,17 +1,45 @@
 #!/bin/bash
 set -euo pipefail
+cd "$(dirname "$0")/.."
 
-WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$WHISPER_DIR"
+MEDIUM="mlx-community/whisper-medium"
+LARGE="mlx-community/whisper-large-v3-mlx"
+TURBO="mlx-community/whisper-large-v3-turbo"
 
-MODEL="${1:-mlx-community/whisper-large-v3-turbo}"
-# MODEL="${1:-mlx-community/whisper-tiny}"
+usage() {
+    echo "Usage: $0 [-l | -m | -t | -a | -h]"
+    echo "  -l  download large model ($LARGE)"
+    echo "  -m  download medium model ($MEDIUM)"
+    echo "  -t  download turbo model ($TURBO)"
+    echo "  -a  download all models"
+    echo "  -h  show this help"
+    echo "  (no flags) download turbo model ($TURBO)"
+}
+
+MODELS=("$TURBO")
+
+while getopts ":lmtah" opt; do
+    case "$opt" in
+        l) MODELS=("$LARGE") ;;
+        m) MODELS=("$MEDIUM") ;;
+        t) MODELS=("$TURBO") ;;
+        a) MODELS=("$MEDIUM" "$LARGE" "$TURBO") ;;
+        h) usage; exit 0 ;;
+        *) usage; exit 1 ;;
+    esac
+done
+
+if [ $OPTIND -eq 1 ]; then
+    usage
+fi
 
 source p3/bin/activate
 
-python3 -c "
+for MODEL in "${MODELS[@]}"; do
+    python3 -c "
 from huggingface_hub import snapshot_download
 
 path = snapshot_download(repo_id='${MODEL}')
 print(f'Downloaded to {path}')
 "
+done

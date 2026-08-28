@@ -39,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var settingsWindow: NSWindow?
 
   private var sttClient: SttClient {
-    SttClient.fromEnvironment(backend: settings.sttBackend)
+    SttClient.fromEnvironment(baseUrl: settings.sttBaseUrl, whisperModel: settings.whisperModel)
   }
 
   // Global hotkeys: F7, F8, F9, F10, and Option+Space as a backup since some

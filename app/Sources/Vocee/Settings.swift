@@ -8,7 +8,8 @@ final class Settings: ObservableObject {
   private enum Keys {
     static let barScale = "waveformBarScale"
     static let pasteOnFinish = "pasteOnFinish"
-    static let sttBackend = "sttBackend"
+    static let sttBaseUrl = "sttBaseUrl"
+    static let whisperModel = "whisperModel"
   }
 
   /// Multiplier applied to each waveform bar's height. 1.0 is the default look.
@@ -21,9 +22,14 @@ final class Settings: ObservableObject {
     didSet { UserDefaults.standard.set(pasteOnFinish, forKey: Keys.pasteOnFinish) }
   }
 
-  /// Which local whisper server to send transcription requests to.
-  @Published var sttBackend: SttBackend {
-    didSet { UserDefaults.standard.set(sttBackend.rawValue, forKey: Keys.sttBackend) }
+  /// Address of the MLX whisper server to send transcription requests to.
+  @Published var sttBaseUrl: String {
+    didSet { UserDefaults.standard.set(sttBaseUrl, forKey: Keys.sttBaseUrl) }
+  }
+
+  /// Which MLX whisper model size to request.
+  @Published var whisperModel: WhisperModel {
+    didSet { UserDefaults.standard.set(whisperModel.rawValue, forKey: Keys.whisperModel) }
   }
 
   private init() {
@@ -32,7 +38,8 @@ final class Settings: ObservableObject {
     self.barScale = storedScale ?? 1.0
     self.pasteOnFinish =
       (defaults.object(forKey: Keys.pasteOnFinish) as? Bool) ?? true
-    let storedBackend = defaults.string(forKey: Keys.sttBackend).flatMap(SttBackend.init(rawValue:))
-    self.sttBackend = storedBackend ?? .mlx
+    self.sttBaseUrl = defaults.string(forKey: Keys.sttBaseUrl) ?? defaultSttBaseUrl
+    let storedModel = defaults.string(forKey: Keys.whisperModel).flatMap(WhisperModel.init(rawValue:))
+    self.whisperModel = storedModel ?? .turbo
   }
 }

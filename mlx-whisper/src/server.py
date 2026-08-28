@@ -20,6 +20,7 @@ async def transcribe(
     prompt: str = Form(None),
     temperature: float = Form(0.0),
 ):
+    # print(f"Model used:Thank you. {model}")
     suffix = Path(file.filename or "audio").suffix or ".webm"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=True) as tmp:
         tmp.write(await file.read())
