@@ -1,0 +1,50 @@
+#!/bin/bash
+set -euo pipefail
+
+WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PID_FILE="$WHISPER_DIR/__running/server.pid"
+
+FORCE=0
+for arg in "$@"; do
+  case "$arg" in
+    -f|--force)
+      FORCE=1
+      ;;
+    *)
+      echo "Usage: $0 [-f|--force]" >&2
+      exit 1
+      ;;
+  esac
+done
+
+PIDS="$(lsof -i :9991 -sTCP:LISTEN -t || true)"
+
+if [ -z "$PIDS" ]; then
+  echo "No whisper server processes found (to be killed)" >&2
+  rm -f "$PID_FILE"
+  exit 1
+fi
+
+if [ "$FORCE" -eq 1 ]; then
+  echo "Killing whisper server processes: $PIDS"
+  kill -9 $PIDS
+  rm -f "$PID_FILE"
+  exit 0
+fi
+
+kill $PIDS
+
+for _ in $(seq 1 10); do
+  PIDS="$(lsof -i :9991 -sTCP:LISTEN -t || true)"
+  [ -z "$PIDS" ] && break
+  sleep 0.5
+done
+
+PIDS="$(lsof -i :9991 -sTCP:LISTEN -t || true)"
+if [ -n "$PIDS" ]; then
+  echo "Process(es) $PIDS did not stop gracefully, forcing" >&2
+  kill -9 $PIDS
+fi
+
+rm -f "$PID_FILE"
+echo "Stopped whisper server"
