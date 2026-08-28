@@ -20,7 +20,7 @@ done
 PIDS="$(lsof -i :9991 -sTCP:LISTEN -t || true)"
 
 if [ -z "$PIDS" ]; then
-  echo "No whisper server processes found" >&2
+  echo "No whisper server processes found (to be killed)" >&2
   rm -f "$PID_FILE"
   exit 1
 fi
