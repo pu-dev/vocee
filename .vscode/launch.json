@@ -79,6 +79,46 @@
             "target": "Vocee",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release Vocee (app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/cipa/vocee/app",
+            "name": "Debug vocee-cli (cipa/vocee/app)",
+            "target": "vocee-cli",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug vocee-cli (cipa/vocee/app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/cipa/vocee/app",
+            "name": "Release vocee-cli (cipa/vocee/app)",
+            "target": "vocee-cli",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release vocee-cli (cipa/vocee/app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/cipa/vocee/app",
+            "name": "Debug Vocee (cipa/vocee/app)",
+            "target": "Vocee",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Vocee (cipa/vocee/app)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:vocee}/cipa/vocee/app",
+            "name": "Release Vocee (cipa/vocee/app)",
+            "target": "Vocee",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Vocee (cipa/vocee/app)"
         }
     ]
 }

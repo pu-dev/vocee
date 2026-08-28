@@ -29,8 +29,6 @@ func debugLog(_ message: String) {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
   private var statusItem: NSStatusItem!
-  private var popover: NSPopover!
-  private var resultWindow: NSWindow?
 
   private let recorder = AudioRecorder()
   private let waveformModel = WaveformModel()
@@ -69,12 +67,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       button.target = self
       button.sendAction(on: [.leftMouseUp, .rightMouseUp])
     }
-
-    popover = NSPopover()
-    popover.behavior = .applicationDefined
-    popover.contentSize = NSSize(width: 220, height: 120)
-    popover.contentViewController = NSHostingController(
-      rootView: WaveformView(model: waveformModel, settings: settings).padding())
 
     recorder.onLevel = { [weak self] level in
       self?.waveformModel.push(level)
@@ -193,7 +185,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       openSettings()
     } else {
       debugLog("statusItemClicked isRecording=\(isRecording)")
-      isRecording ? stopAndTranscribe() : startRecording()
+      isRecording ? stopAndTranscribe() : startHotkeyRecording()
     }
   }
 
@@ -219,31 +211,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     settingsWindow = window
   }
 
-  private func startRecording() {
-    waveformModel.reset()
-    do {
-      try recorder.start()
-    } catch {
-      showError("Could not start recording: \(error.localizedDescription)")
-      return
-    }
-    isRecording = true
-    statusItem.button?.image = NSImage(
-      systemSymbolName: "waveform", accessibilityDescription: "Recording")
-    registerEscapeHotkey()
-
-    if let button = statusItem.button {
-      popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-    }
-  }
-
   private func stopAndTranscribe(silent: Bool = false) {
     let pcm = recorder.stop()
     isRecording = false
     statusItem.button?.image = NSImage(
       systemSymbolName: "mic.fill", accessibilityDescription: "Vocee")
     unregisterEscapeHotkey()
-    popover.performClose(nil)
     hotkeyWindow?.close()
     hotkeyWindow = nil
 
@@ -260,9 +233,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settings.pasteOnFinish {
           pasteToActiveWindow()
           debugLog("pasteToActiveWindow called")
-        }
-        if !silent {
-          showResult(text, copiedToClipboard: true)
         }
       } catch {
         debugLog("transcribe FAILED: \(error)")
@@ -294,25 +264,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     keyDown?.post(tap: .cghidEventTap)
     keyUp?.post(tap: .cghidEventTap)
-  }
-
-  private func showResult(_ text: String, copiedToClipboard: Bool) {
-    let view = ResultView(text: text, copiedToClipboard: copiedToClipboard) { [weak self] in
-      self?.resultWindow?.close()
-    }
-    let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 360, height: 260),
-      styleMask: [.titled, .closable],
-      backing: .buffered,
-      defer: false
-    )
-    window.title = "Vocee"
-    window.contentView = NSHostingView(rootView: view)
-    window.center()
-    window.isReleasedWhenClosed = false
-    window.makeKeyAndOrderFront(nil)
-    NSApp.activate(ignoringOtherApps: true)
-    resultWindow = window
   }
 
   private func showError(_ message: String) {
