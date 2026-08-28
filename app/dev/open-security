@@ -1,3 +1,7 @@
 #!/bin/bash
 
 open "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent"
+
+# Accessibility / just for "paste" to work
+# Input monitoring
+# and Microphone

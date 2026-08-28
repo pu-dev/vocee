@@ -1,0 +1,33 @@
+#!/bin/bash
+set -euo pipefail
+
+WHISPER_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PID_FILE="$WHISPER_DIR/__running/server.pid"
+
+if [ ! -f "$PID_FILE" ]; then
+  echo "No pid file found; server not running" >&2
+  exit 1
+fi
+
+PID="$(cat "$PID_FILE")"
+
+if ! kill -0 "$PID" 2>/dev/null; then
+  echo "Process $PID not running; removing stale pid file" >&2
+  rm -f "$PID_FILE"
+  exit 0
+fi
+
+kill "$PID"
+
+for _ in $(seq 1 10); do
+  kill -0 "$PID" 2>/dev/null || break
+  sleep 0.5
+done
+
+if kill -0 "$PID" 2>/dev/null; then
+  echo "Process $PID did not stop gracefully, forcing" >&2
+  kill -9 "$PID"
+fi
+
+rm -f "$PID_FILE"
+echo "Stopped whisper server (pid $PID)"
