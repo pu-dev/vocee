@@ -22,10 +22,10 @@ struct WaveformView: View {
       ForEach(Array(model.levels.enumerated()), id: \.offset) { _, level in
         RoundedRectangle(cornerRadius: 1)
           .fill(Color.accentColor)
-          .frame(width: 3, height: max(2, CGFloat(level) * 56 * settings.barScale))
+          .frame(width: 3, height: max(2, CGFloat(level) * 56 * CGFloat(settings.barScale)))
       }
     }
-    .frame(height: 60 * settings.barScale)
+    .frame(height: 60 * CGFloat(settings.barScale))
     .animation(.linear(duration: 0.05), value: model.levels)
   }
 }
