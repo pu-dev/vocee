@@ -38,7 +38,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var isRecording = false
   private var settingsWindow: NSWindow?
 
-  private lazy var sttClient = SttClient.fromEnvironment()
+  private var sttClient: SttClient {
+    SttClient.fromEnvironment(backend: settings.sttBackend)
+  }
 
   // Global hotkeys: F7, F8, F9, F10, and Option+Space as a backup since some
   // keyboards bind the F-keys to system media/brightness functions. Any of
@@ -194,21 +196,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   @objc private func statusItemClicked() {
     guard let event = NSApp.currentEvent else { return }
     if event.type == .rightMouseUp {
-      showContextMenu()
+      openSettings()
     } else {
       debugLog("statusItemClicked isRecording=\(isRecording)")
       isRecording ? stopAndTranscribe() : startRecording()
     }
-  }
-
-  private func showContextMenu() {
-    let menu = NSMenu()
-    menu.addItem(
-      withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: "")
-      .target = self
-    statusItem.menu = menu
-    statusItem.button?.performClick(nil)
-    statusItem.menu = nil
   }
 
   @objc private func openSettings() {

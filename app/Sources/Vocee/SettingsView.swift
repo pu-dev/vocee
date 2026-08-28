@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import VoceeCore
 
 struct SettingsView: View {
   @ObservedObject var settings: Settings
@@ -20,6 +21,17 @@ struct SettingsView: View {
       }
 
       Toggle("Paste into active app when done", isOn: $settings.pasteOnFinish)
+
+      VStack(alignment: .leading, spacing: 4) {
+        Text("Speech-to-text server")
+        Picker("", selection: $settings.sttBackend) {
+          ForEach(SttBackend.allCases, id: \.self) { backend in
+            Text(backend.displayName).tag(backend)
+          }
+        }
+        .labelsHidden()
+        .pickerStyle(.segmented)
+      }
 
       HStack {
         Spacer()

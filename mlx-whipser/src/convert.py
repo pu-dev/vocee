@@ -8,13 +8,12 @@ def main():
     parser.add_argument(
         "--model",
         default="mlx-community/whisper-large-v3-turbo",
-        help="Hugging Face repo of the mlx-whisper model to use",
+        help="Mlx-whisper model to use",
     )
     args = parser.parse_args()
 
     result = mlx_whisper.transcribe(args.audio_file, path_or_hf_repo=args.model)
     print(result["text"])
-
 
 if __name__ == "__main__":
     main()

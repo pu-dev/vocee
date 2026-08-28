@@ -1,5 +1,30 @@
 import Foundation
 
+/// Which local whisper server to talk to. Each case carries the defaults
+/// that match that server's `dev/run-local` script and default model.
+public enum SttBackend: String, CaseIterable, Sendable {
+  case mlx
+  case fasterWhisper
+
+  public var displayName: String {
+    switch self {
+    case .mlx: return "MLX Whisper"
+    case .fasterWhisper: return "Faster Whisper"
+    }
+  }
+
+  public var defaultBaseUrl: String {
+    "http://127.0.0.1:9991"
+  }
+
+  public var defaultModel: String {
+    switch self {
+    case .mlx: return "mlx-community/whisper-large-v3-turbo"
+    case .fasterWhisper: return "large-v3"
+    }
+  }
+}
+
 public enum SttError: Error, LocalizedError {
   case badResponse(Int, String)
   case missingText
@@ -26,12 +51,12 @@ public struct SttClient {
   }
 
   /// Builds a client from the `STT_BASE_URL` / `STT_MODEL` / `STT_API_KEY`
-  /// environment variables, falling back to the local mlx-community server.
-  public static func fromEnvironment() -> SttClient {
+  /// environment variables, falling back to the given backend's defaults.
+  public static func fromEnvironment(backend: SttBackend = .fasterWhisper) -> SttClient {
     let env = ProcessInfo.processInfo.environment
     return SttClient(
-      baseUrl: env["STT_BASE_URL"] ?? "http://127.0.0.1:9991",
-      model: env["STT_MODEL"] ?? "mlx-community/whisper-large-v3-turbo",
+      baseUrl: env["STT_BASE_URL"] ?? backend.defaultBaseUrl,
+      model: env["STT_MODEL"] ?? backend.defaultModel,
       apiKey: env["STT_API_KEY"]
     )
   }
