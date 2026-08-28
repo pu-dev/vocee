@@ -11,7 +11,7 @@ DEFAULT_MODEL = "mlx-community/whisper-large-v3-turbo"
 app = FastAPI(title="whisper-openai-compat")
 
 
-@app.post("/stt")
+@app.post("/api/stt")
 async def transcribe(
     file: UploadFile = File(...),
     model: str = Form(DEFAULT_MODEL),

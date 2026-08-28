@@ -25,6 +25,17 @@ public struct SttClient {
     self.apiKey = apiKey
   }
 
+  /// Builds a client from the `STT_BASE_URL` / `STT_MODEL` / `STT_API_KEY`
+  /// environment variables, falling back to the local mlx-community server.
+  public static func fromEnvironment() -> SttClient {
+    let env = ProcessInfo.processInfo.environment
+    return SttClient(
+      baseUrl: env["STT_BASE_URL"] ?? "http://127.0.0.1:9991",
+      model: env["STT_MODEL"] ?? "mlx-community/whisper-large-v3-turbo",
+      apiKey: env["STT_API_KEY"]
+    )
+  }
+
   public func transcribe(wav: Data, filename: String = "recording.wav") async throws -> String {
     let boundary = "Boundary-\(UUID().uuidString)"
     var body = Data()
@@ -47,7 +58,7 @@ public struct SttClient {
     body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
     let trimmedBase = baseUrl.hasSuffix("/") ? String(baseUrl.dropLast()) : baseUrl
-    let url = URL(string: "\(trimmedBase)/v1/audio/transcriptions")!
+    let url = URL(string: "\(trimmedBase)/api/stt")!
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"

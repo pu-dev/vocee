@@ -30,13 +30,7 @@ func pasteToActiveWindow() {
 
 let shouldPaste = CommandLine.arguments.dropFirst().contains { $0 == "-p" || $0 == "--paste" }
 
-let sttClient = SttClient(
-  baseUrl: ProcessInfo.processInfo.environment["STT_BASE_URL"]
-    ?? "http://127.0.0.1:8990/api/openai_compat",
-  model: ProcessInfo.processInfo.environment["STT_MODEL"]
-    ?? "mlx-community/whisper-large-v3-turbo",
-  apiKey: ProcessInfo.processInfo.environment["STT_API_KEY"]
-)
+let sttClient = SttClient.fromEnvironment()
 
 let recorder = AudioRecorder()
 

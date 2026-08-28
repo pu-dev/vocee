@@ -38,13 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var isRecording = false
   private var settingsWindow: NSWindow?
 
-  private lazy var sttClient = SttClient(
-    baseUrl: ProcessInfo.processInfo.environment["STT_BASE_URL"]
-      ?? "http://127.0.0.1:8990/api/openai_compat",
-    model: ProcessInfo.processInfo.environment["STT_MODEL"]
-      ?? "mlx-community/whisper-large-v3-turbo",
-    apiKey: ProcessInfo.processInfo.environment["STT_API_KEY"]
-  )
+  private lazy var sttClient = SttClient.fromEnvironment()
 
   // Global hotkeys: F7, F8, F9, F10, and Option+Space as a backup since some
   // keyboards bind the F-keys to system media/brightness functions. Any of
