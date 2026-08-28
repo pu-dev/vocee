@@ -7,7 +7,7 @@
   <key>CFBundleDisplayName</key>
   <string>VoiceScribe</string>
   <key>CFBundleIdentifier</key>
-  <string>ai.pipeline.voicescribe</string>
+  <string>com.vocee</string>
   <key>CFBundleVersion</key>
   <string>1</string>
   <key>CFBundleShortVersionString</key>

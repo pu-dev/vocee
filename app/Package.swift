@@ -2,22 +2,22 @@
 import PackageDescription
 
 let package = Package(
-  name: "VoiceScribe",
+  name: "Vocee",
   platforms: [.macOS(.v13)],
   targets: [
     .target(
-      name: "VoiceScribeCore",
-      path: "Sources/VoiceScribeCore"
+      name: "VoceeCore",
+      path: "Sources/VoceeCore"
     ),
     .executableTarget(
-      name: "VoiceScribe",
+      name: "Vocee",
       dependencies: ["VoiceScribeCore"],
-      path: "Sources/VoiceScribe"
+      path: "Sources/Vocee"
     ),
     .executableTarget(
-      name: "voicescribe-cli",
-      dependencies: ["VoiceScribeCore"],
-      path: "Sources/voicescribe-cli"
+      name: "vocee-cli",
+      dependencies: ["VoceeCore"],
+      path: "Sources/vocee-cli"
     ),
   ]
 )

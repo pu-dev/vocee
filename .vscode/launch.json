@@ -5,40 +5,40 @@
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:voice-scribe}",
-            "name": "Debug VoiceScribe",
-            "target": "VoiceScribe",
+            "name": "Debug Vocee",
+            "target": "Vocee",
             "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug VoiceScribe"
+            "preLaunchTask": "swift: Build Debug Vocee"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:voice-scribe}",
-            "name": "Release VoiceScribe",
-            "target": "VoiceScribe",
+            "name": "Release Vocee",
+            "target": "Vocee",
             "configuration": "release",
-            "preLaunchTask": "swift: Build Release VoiceScribe"
+            "preLaunchTask": "swift: Build Release Vocee"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:voice-scribe}",
-            "name": "Debug voicescribe-cli",
-            "target": "voicescribe-cli",
+            "name": "Debug vocee-cli",
+            "target": "vocee-cli",
             "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug voicescribe-cli"
+            "preLaunchTask": "swift: Build Debug vocee-cli"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:voice-scribe}",
-            "name": "Release voicescribe-cli",
-            "target": "voicescribe-cli",
+            "name": "Release vocee-cli",
+            "target": "vocee-cli",
             "configuration": "release",
-            "preLaunchTask": "swift: Build Release voicescribe-cli"
+            "preLaunchTask": "swift: Build Release vocee-cli"
         }
     ]
 }

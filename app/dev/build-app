@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 CONFIG="${1:-debug}"
-APP_NAME="VoiceScribe"
+APP_NAME="Vocee"
 BUNDLE="$APP_NAME.app"
 
 swift build -c "$CONFIG"
@@ -27,7 +27,7 @@ codesign --force --deep --sign - "$BUNDLE"
 # every rebuild, since ad-hoc signing has no stable Team ID to key the grant
 # to. The only fix that has actually worked is a full reset before
 # relaunching:
-#   tccutil reset Accessibility ai.pipeline.voicescribe
+#   tccutil reset Accessibility com.vocee
 # then relaunch and re-grant when the prompt reappears.
 
 echo "Built $BUNDLE"
